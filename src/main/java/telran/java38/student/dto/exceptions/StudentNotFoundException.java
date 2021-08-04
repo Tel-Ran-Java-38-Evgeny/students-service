@@ -15,7 +15,7 @@ public class StudentNotFoundException extends RuntimeException {
 	}
 	
 	public StudentNotFoundException(int id) {
-		super("student id: " + id + ", not found");
+		super("Student id " + id + ", not found");
 	}
 
 }

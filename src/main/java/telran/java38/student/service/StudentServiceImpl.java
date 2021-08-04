@@ -1,5 +1,6 @@
 package telran.java38.student.service;
 
+import java.util.Base64;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -11,6 +12,8 @@ import telran.java38.student.dto.ScoreDto;
 import telran.java38.student.dto.StudentBaseDto;
 import telran.java38.student.dto.StudentDto;
 import telran.java38.student.dto.StudentUpdateDto;
+import telran.java38.student.dto.exceptions.AuthorizationException;
+import telran.java38.student.dto.exceptions.ForbiddenException;
 import telran.java38.student.dto.exceptions.StudentNotFoundException;
 import telran.java38.student.model.Student;
 
@@ -57,9 +60,22 @@ public class StudentServiceImpl implements StudentService {
 	}
 
 	@Override
-	public StudentBaseDto updateStudent(Integer id, StudentUpdateDto studentUpdateDto) {
+	public StudentBaseDto updateStudent(Integer id, StudentUpdateDto studentUpdateDto, String token) {
 		Student student = studentRepository.findById(id)
 				.orElseThrow(() -> new StudentNotFoundException(id));
+		
+		byte[] decodedBytes = Base64.getDecoder().decode(token.split(" ")[1]);
+		String[] authCred = new String(decodedBytes).split(":", 2);
+		String userName = authCred[0];
+		String userPass = authCred[1];
+		if (!student.getName().equals(userName)) {
+			throw new AuthorizationException(student.getName());
+		}
+		
+		if (!student.getPassword().equals(userPass)) {
+			throw new ForbiddenException(userName, userPass, student.getPassword());
+		}
+		
 		if (studentUpdateDto.getName() != null) {
 			student.setName(studentUpdateDto.getName());
 		}

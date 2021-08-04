@@ -14,7 +14,7 @@ public interface StudentService {
 
 	StudentDto removeStudent(Integer id);
 
-	StudentBaseDto updateStudent(Integer id, StudentUpdateDto studentUpdateDto);
+	StudentBaseDto updateStudent(Integer id, StudentUpdateDto studentUpdateDto, String token);
 
 	boolean addScore(Integer id, ScoreDto scoreDto);
 
